@@ -21,8 +21,6 @@ interface SavedMessage {
   content: string;
 }
 
-type AssistantOverrides = any;
-
 const Agent = ({
   userName,
   userId,
@@ -118,15 +116,20 @@ const Agent = ({
 
   const handleCall = async () => {
     setCallStatus(CallStatus.CONNECTING);
-    // Add this above your component
 
     if (type === "generate") {
-      await vapi.start(process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID!, {
-        variableValues: {
-          username: userName,
-          userid: userId ?? "unknown", // fallback if userId is undefined
-        },
-      } as any);
+      await vapi.start(
+        undefined,
+        undefined,
+        undefined,
+        process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID!,
+        {
+          variableValues: {
+            username: userName,
+            userid: userId,
+          },
+        }
+      );
     } else {
       let formattedQuestions = "";
       if (questions) {
@@ -139,10 +142,9 @@ const Agent = ({
         variableValues: {
           questions: formattedQuestions,
         },
-      } as any);
+      });
     }
   };
-
   const handleDisconnect = () => {
     setCallStatus(CallStatus.FINISHED);
     vapi.stop();
